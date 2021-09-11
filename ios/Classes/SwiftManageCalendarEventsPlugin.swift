@@ -8,7 +8,7 @@ extension Date {
 
 public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     let eventStore = EKEventStore()
-    let logger = Logger(label: "ManageCalendarEvents");
+//    let logger = Logger(label: "ManageCalendarEvents");
 
     struct Calendar: Codable {
         let id: String
@@ -369,8 +369,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 attendees.insert(organiser!, at: 0)
             }
         } catch let error {
-            logger.debug("Error getting the attendees for the eventID \(eventId)")
-            logger.warning("\(error)")
+            print("Error getting the attendees for the eventID \(eventId)")
+            print("\(error)")
         }
         return attendees
     }
