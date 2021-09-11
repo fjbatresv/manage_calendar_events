@@ -84,9 +84,9 @@ class Attendees {
 }
 
 class Attendee {
-  final String name;
-  final String emailAddress;
-  final bool isOrganiser;
+  String? name;
+  String? emailAddress;
+  bool? isOrganiser;
 
   Attendee({
     required this.name,
@@ -94,10 +94,20 @@ class Attendee {
     this.isOrganiser = false,
   });
 
-  Attendee.fromJson(Map<String, dynamic> data)
-      : this.name = data['name'],
-        this.emailAddress = data['emailAddress'],
-        this.isOrganiser = data['isOrganiser'] ?? false;
+  Attendee.fromJson(Map<String, dynamic> data) {
+    try {
+      this.name = data['name'];
+      this.emailAddress = data['emailAddress'];
+      this.isOrganiser = data['isOrganiser'] ?? false;
+    } catch (ex) {
+      log(
+        'Issue parsing an attendee from JSON',
+        name: 'ManageCalendarEvents:Models:CalendarEvent',
+        error: ex,
+        level: 2,
+      );
+    }
+  }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

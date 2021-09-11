@@ -8,6 +8,7 @@ extension Date {
 
 public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     let eventStore = EKEventStore()
+    let logger = Logger(label: "ManageCalendarEvents");
 
     struct Calendar: Codable {
         let id: String
@@ -341,31 +342,35 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         if (!ekEvent!.hasAttendees) {
             return []
         }
-
-        let attendeesList = ekEvent!.attendees
         var attendees = [Attendee]()
-        var organiser: Attendee?
-        for attendeeElement in attendeesList! {
-            let isOrganiser = ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress!
+        do {
+            let attendeesList = ekEvent!.attendees
+            var organiser: Attendee?
+            for attendeeElement in attendeesList! {
+                let isOrganiser = ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress!
 
-            let existingAttendee = attendees.first { element in
-                return element.emailAddress == attendeeElement.emailAddress
-            }
-            if existingAttendee != nil && isOrganiser {
-                continue
-            }
+                let existingAttendee = attendees.first { element in
+                    return element.emailAddress == attendeeElement.emailAddress
+                }
+                if existingAttendee != nil && isOrganiser {
+                    continue
+                }
 
-            let attendee = Attendee(name: attendeeElement.name, emailAddress: attendeeElement.emailAddress!, isOrganiser: isOrganiser)
-            if(isOrganiser) {
-                organiser = attendee
-            } else {
-                attendees.append(attendee)
+                let attendee = Attendee(name: attendeeElement.name, emailAddress: attendeeElement.emailAddress!, isOrganiser: isOrganiser)
+                if(isOrganiser) {
+                    organiser = attendee
+                } else {
+                    attendees.append(attendee)
+                }
             }
-        }
-        attendees = attendees.sorted { $0.name! < $1.name! }
+            attendees = attendees.sorted { $0.name! < $1.name! }
 
-        if organiser != nil && !attendees.isEmpty {
-            attendees.insert(organiser!, at: 0)
+            if organiser != nil && !attendees.isEmpty {
+                attendees.insert(organiser!, at: 0)
+            }
+        } catch let error {
+            logger.debug("Error getting the attendees for the eventID \(eventId)")
+            logger.warning("\(error)")
         }
         return attendees
     }
