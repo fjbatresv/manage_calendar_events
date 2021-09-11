@@ -8,7 +8,6 @@ extension Date {
 
 public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     let eventStore = EKEventStore()
-//    let logger = Logger(label: "ManageCalendarEvents");
 
     struct Calendar: Codable {
         let id: String
